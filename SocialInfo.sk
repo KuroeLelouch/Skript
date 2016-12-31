@@ -1,0 +1,181 @@
+#========================================#
+#    SocialInfo Skript by KuroLelouch    #
+#                  v1.0                  #
+#========================================#
+
+
+ 
+# /socialinfo (twitch|youtube) info <chaine twitch ou youtube>
+# ^ Afin d'obtenir des informations sur des chaines Twitch ou Youtube
+# =====================================================================
+command /socialinfo [<text>] [<text>] [<text>]:
+    permission: socialinfo.access
+    description: Permet d'obtenir des informations sur des chaines Twitch ou Youtube
+    aliases: /si
+    trigger:
+        if arg 1 is "twitch":
+            if arg-2 is set:
+                set {_rprime} to "https://api.twitch.tv/kraken/streams/%arg-3%?client_id=b42c89ob4yrf8mbh6t1f0xdykv84g7z"
+                set {_r} to uncolored {_rprime}
+                #send {_r} to player
+                send a request to {_r}
+                set {_resp} to the last http response
+                #send "%{_resp}%"
+                if arg-2 is "info":
+                    if "%{_resp}%" contains "viewers":
+                        send ""
+                        send ""
+                        send "&7┌ Twitch Linker : Version 1.0"
+                        send "&7├&a&l Votre streamer est en live "
+                        run player command "/splitkuro info %{_resp}%" as op
+                    else:
+                        send ""
+                        send "&c&l~ Votre streamer n'est pas en live ~"
+                        send ""
+                else if arg-2 is "gui":
+                    if "%{_resp}%" contains "viewers":
+                        send ""
+                        send ""
+                        send "&7┌ Twitch Linker : Version 1.0"
+                        send "&7└&a&l Votre streamer est en live "
+                        run player command "/splitkuro info+ %{_resp}%" as op
+                    else:
+                        send ""
+                        send "&c&l~ Votre streamer n'est pas en live ~"
+                        send ""
+        else if arg 1 is "youtube":
+            if arg-3 contains "youtube.com":
+                set {_rprime} to "%arg-3%"
+            else:
+                set {_rprime} to "https://www.youtube.com/watch?v=%arg-3%"
+            set {_r} to uncolored {_rprime}
+            #send {_r} to player
+            send a request to {_r}
+            set {_resp} to the last http response
+            if arg-2 contains "info":
+                run player command "/spliter %{_resp}%" as op
+
+        else:  
+            send ""
+            send ""
+            send "&7┌ &aSocial Info :"
+            send "&7├      &c Commandes :"
+            send "&7├      &3      Twitch :"
+            send "&7├      &7      - /socialinfo &3twitch &ainfo &7<votre_streamer>"
+            send "&7├      &7      - /socialinfo &3twitch &agui &7<votre_streamer> "
+            send "&7├      &3      Youtube :"
+            send "&7├      &7      - /socialinfo &3youtube &ainfo &7<Lien ou ID de la video YT>"
+#            send "&7├      &7      - /socialinfo &3youtube &agui &7<Lien ou ID de la video YT> &c[ Prochaine MAJ ]"
+            send "&7├      "
+            send "&7├      &2 Version :"
+            send "&7├      &7       - 1.0"
+            send "&7└"
+            send ""
+            send ""
+
+#----------------------- [PROTOCOL] -----------------------------------
+
+command /splitkuro <text> <text>:
+    permission: no.perm.only.from.skript
+    trigger:
+        if arg-1 contains "info":
+            set {_split::*} to arg-2 split at """viewers"":"
+            #send "&b%{_split::2}%"
+            set {_s} to {_split::2}
+            set {_split2::*} to {_s} split at ","
+            set {_finalview} to {_split2::1}
+            set {_split::*} to arg-2 split at """game"":"
+            #send "&b%{_split::2}%"
+            set {_s} to {_split::2}
+            set {_split2::*} to {_s} split at ","
+            set {_finalgame} to {_split2::1}
+            replace all """" with "" in {_finalgame}
+            set {_split::*} to arg-2 split at """status"":"
+            #send "&b%{_split::2}%"
+            set {_s} to {_split::2}
+            set {_split2::*} to {_s} split at ","
+            set {_finalname} to {_split2::1}
+            replace all """" with "" in {_finalname}
+            set {_split::*} to arg-2 split at """language"":"
+            #send "&b%{_split::2}%"
+            set {_s} to {_split::2}
+            set {_split2::*} to {_s} split at ","
+            set {_finallang} to {_split2::1}
+            replace all """" with "" in {_finallang}
+            set {_split::*} to arg-2 split at """followers"":"
+            #send "&b%{_split::2}%"
+            set {_s} to {_split::2}
+            set {_split2::*} to {_s} split at ","
+            set {_finalfollow} to {_split2::1}
+            if arg-1 is "info+":
+                open chest with 5 row named "&5▼            &5&lTwitch Linker          &5▼" to player
+                wait 3 ticks
+                format slot 12 of player with 1 eye of ender named "&6&lNombre de Viewers :" with lore "   &f%{_finalview}%" to close
+                format slot 14 of player with 1 jukebox named "&a&lJeu du Stream :" with lore "    &f%{_finalgame}%" to close
+                format slot 22 of player with 1 book named "&3&lTitre du Stream :" with lore "    &f%{_finalname}%" to close
+                format slot 30 of player with 1 feather named "&5&lLangue du stream :" with lore "    &f%{_finallang}%" to close
+                format slot 32 of player with 1 lead named "&d&lNombre de followers :" with lore "    &f%{_finalfollow}%" to close
+            else:
+                send "&7├ &6Nombre de viewers : &f%{_finalview}%"
+                send "&7├ &6Jeu : &f%{_finalgame}%"
+                send "&7├ &6Titre du stream : &f%{_finalname}%"
+                send "&7└ &6Langue du stream : &f%{_finallang}%"
+                send ""
+                send ""
+
+
+
+
+command /spliter <text>:
+    trigger:
+        if arg-1 contains "<title>YouTube</title>":
+            send "&c&l~ Cette Video est indisponible ~"
+            stop
+        #----- Titre ---
+        set {_split::*} to arg-1 split at "<title>"
+        #send "&b%{_split::2}%"
+        set {_s} to {_split::2}
+        set {_split2::*} to {_s} split at "</title>"
+        set {_finaltitle} to {_split2::1}
+        #------- Vues -----
+        set {_split::*} to arg-1 split at "<div class=""watch-view-count"">"
+        #send "&b%{_split::2}%"
+        set {_s} to {_split::2}
+        set {_split2::*} to {_s} split at "</div>"
+        set {_finalviews} to {_split2::1}
+        replace all " " and " " with " " in {_finalviews}
+        #--------- Author ---------------
+        set {_split::*} to arg-1 split at """author"":"
+        #send "&b%{_split::2}%"
+        set {_s} to {_split::2}
+        set {_split2::*} to {_s} split at ","
+        set {_finalauthor} to {_split2::1}
+        replace all """" and " " with "" in {_finalauthor}
+        #--------- Date d'upload ---------------
+        set {_split::*} to arg-1 split at "<div id=""watch-uploader-info""><strong class=""watch-time-text"">"
+        #send "&b%{_split::2}%"
+        set {_s} to {_split::2}
+        set {_split2::*} to {_s} split at "</strong>"
+        set {_finaldate} to {_split2::1}
+        replace all """" and " " with "" in {_finaldate}
+        #--------- Nombre d'abo ---------------
+        set {_split::*} to arg-1 split at "class=""yt-subscription-button-subscriber-count-branded-horizontal yt-subscriber-count"" title="
+        #send "&b%{_split::2}%"
+        set {_s} to {_split::2}
+        set {_split2::*} to {_s} split at " aria-label="
+        set {_finalabo} to {_split2::1}
+        replace all " " and " " and """" and " " with " " in {_finalabo}
+
+        send ""
+        send ""
+        send "&7┌ Youtube Linker : Version 1.0"
+        send "&7├ &6Titre de la video : &f%{_finaltitle}%"
+        send "&7├ &6Auteur de la video : &f%{_finalauthor}%"
+        send "&7├ &6Nombre de vues   : &f%{_finalviews}%"
+        send "&7├ &6Date d'upload : &f%{_finaldate}%"
+        send "&7└ &6Nombre d'abo: &f%{_finalabo}%"
+
+
+
+        send ""
+        send ""
