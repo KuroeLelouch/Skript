@@ -41,7 +41,7 @@ on chat:
                 replace all "*" and "@" with "" in message
                 replace all "*" and "@" with "" in {_v}
                 replace all "%{_v}%" with "&6%{_v}%&f" in message
-
+            clear {blang.color.%player%::*}
 command /blang [<text>] [<text>]:
     permission: only.skript.can.use
     trigger:
