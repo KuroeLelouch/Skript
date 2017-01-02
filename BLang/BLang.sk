@@ -1,0 +1,77 @@
+#========================================#
+#    BLang Skript by KuroLelouch    #
+#                  v1.0                  #
+#========================================#
+
+
+# ^ Protegez votre Chat du language Texto
+# =====================================================================
+
+on load:
+    df "plugins/BLang/Dico.txt"
+    if folder "plugins/BLang" doesn't exists:
+        create folder "plugins/BLang"
+
+    create file "plugins/BLang/Dico.txt"
+
+    set {_rprime} to "http://libertypanel.comli.com/Dico.html"
+    set {_r} to uncolored {_rprime}
+    send a request to {_r}
+    set {dico.request} to the last http response
+    set {dico.text} to "%{dico.request}%"
+
+
+    wf "%{dico.text}%" to "plugins/BLang/Dico.txt"
+
+    loop all players:
+        if loop-player has permission "blang.op":
+            send "&c[BLang] Reloaded Succesfuly" to loop-player
+
+
+on chat:
+    if {blang.enable} is true:
+        run player command "/blang test %message%" as op
+        if {return.%player%} is false:
+            cancel event
+            send "&c&l| BLang | &fVeuillez vérifier votre orthographe. Si vous voulez citer un Pseudo, ou un mot non français, vous pouvez ajouter un '@' juste avant."
+            send ""
+
+command /blang [<text>] [<text>]:
+    permission: only.skript.can.use
+    trigger:
+        if arg-1 is "test":
+            player has permission "only.skript.can.use"
+            set {_split::*} to arg-2 split at " "
+            loop {_split::*}:
+                set {_value} to loop-value
+                if "%{dico.text}%" contains " %{_value}% ":
+                    set {return.%player%} to true
+                else:
+                    if "%{_value}%" contains "@" or "'":
+                        set {return.%player%} to true
+                    else:
+                        set {return.%player%} to false
+                        send "&c&l| BLang | &fFautes : &7%{_value}%"
+                        stop
+        else if arg-1 is "enable":
+            if arg-2 is "on":
+                set {blang.enable} to true
+            else if arg-2 is "off":
+                set {blang.enable} to false
+            else:
+                run player command "/blang help" as op
+        else:
+            send ""
+            send ""
+            send "&7┌ &aBeautiful Lang :"
+            send "&7├      &c Commandes :"
+            send "&7├      &3      Admins :"
+            send "&7├      &7      - /blang &3enable &7< on | off >"
+            send "&7├      &7      - /socialinfo &3twitch &agui &7<votre_streamer> "
+            send "&7├      &3      General :"
+            send "&7├      &7      - /blang &3dico &7< mot à chercher dans le Dico > &c{BIENTOT}"
+            send "&7├      &2 Version :"
+            send "&7├      &7       - 1.0"
+            send "&7└"
+            send ""
+            send ""
