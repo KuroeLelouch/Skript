@@ -34,6 +34,7 @@ command /socialinfo [<text>] [<text>] [<text>]:
                         send ""
                 else if arg-2 is "gui":
                     if "%{_resp}%" contains "viewers":
+                    
                         send ""
                         send ""
                         send "&7┌ Twitch Linker : Version 1.0"
