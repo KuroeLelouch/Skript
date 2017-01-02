@@ -35,6 +35,12 @@ on chat:
             cancel event
             send "&c&l| BLang | &fVeuillez vérifier votre orthographe. Si vous voulez citer un Pseudo, ou un mot non français, vous pouvez ajouter un '@' juste avant."
             send ""
+        else:
+            loop {blang.color.%player%::*}:
+                set {_v} to loop-value
+                replace all "*" and "@" with "" in message
+                replace all "*" and "@" with "" in {_v}
+                replace all "%{_v}%" with "&6%{_v}%&f" in message
 
 command /blang [<text>] [<text>]:
     permission: only.skript.can.use
@@ -47,8 +53,10 @@ command /blang [<text>] [<text>]:
                 if "%{dico.text}%" contains " %{_value}% ":
                     set {return.%player%} to true
                 else:
-                    if "%{_value}%" contains "@" or "'":
+                    if "%{_value}%" contains "@" or "'" or "ha" or "hé" or "ah" or "ho" or "bla" or "*":
                         set {return.%player%} to true
+                        if "%{_value}%" contains "@" or "*":
+                            add {_value} to {blang.color.%player%::*}
                     else:
                         set {return.%player%} to false
                         send "&c&l| BLang | &fFautes : &7%{_value}%"
@@ -71,7 +79,7 @@ command /blang [<text>] [<text>]:
             send "&7├      &3      General :"
             send "&7├      &7      - /blang &3dico &7< mot à chercher dans le Dico > &c{BIENTOT}"
             send "&7├      &2 Version :"
-            send "&7├      &7       - 1.0"
+            send "&7├      &7       - 1.1"
             send "&7└"
             send ""
             send ""
