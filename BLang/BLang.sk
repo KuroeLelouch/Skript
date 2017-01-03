@@ -75,7 +75,6 @@ command /blang [<text>] [<text>]:
             send "&7├      &c Commandes :"
             send "&7├      &3      Admins :"
             send "&7├      &7      - /blang &3enable &7< on | off >"
-            send "&7├      &7      - /socialinfo &3twitch &agui &7<votre_streamer> "
             send "&7├      &3      General :"
             send "&7├      &7      - /blang &3dico &7< mot à chercher dans le Dico > &c{BIENTOT}"
             send "&7├      &2 Version :"
